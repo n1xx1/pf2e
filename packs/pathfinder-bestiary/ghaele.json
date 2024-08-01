@@ -1887,11 +1887,7 @@
                 },
                 "damageRolls": {
                     "0": {
-                        "damage": "1d12",
-                        "damageType": "spirit"
-                    },
-                    "1": {
-                        "damage": "1d12",
+                        "damage": "2d12",
                         "damageType": "spirit"
                     }
                 },
@@ -1908,8 +1904,6 @@
                 "traits": {
                     "rarity": "common",
                     "value": [
-                        "chaotic",
-                        "good",
                         "holy",
                         "light",
                         "range-300"
@@ -2240,7 +2234,7 @@
             "_id": "oyoc1hZoDt82qJP0",
             "img": "systems/pf2e/icons/default-icons/lore.svg",
             "name": "Warfare Lore",
-            "sort": 3800000,
+            "sort": 3200000,
             "system": {
                 "description": {
                     "value": ""

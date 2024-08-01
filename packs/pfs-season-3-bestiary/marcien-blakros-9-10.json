@@ -2089,7 +2089,7 @@
         },
         {
             "_id": "whUJdRea4GTXhhXh",
-            "img": "systems/pf2e/icons/features/classes/defensive-robes.webp",
+            "img": "icons/equipment/back/cloak-collared-pink-gold.webp",
             "name": "Impressive Coat",
             "sort": 3000000,
             "system": {
@@ -2337,7 +2337,7 @@
             "_id": "Q1xzBLXCMNEeckwP",
             "img": "systems/pf2e/icons/default-icons/lore.svg",
             "name": "Shadow Plane Lore",
-            "sort": 4000000,
+            "sort": 3500000,
             "system": {
                 "description": {
                     "value": ""

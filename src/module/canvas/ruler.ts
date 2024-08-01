@@ -15,11 +15,15 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
         return setting === "always" || (setting === "encounters" && !!game.combat?.active);
     }
 
-    /** Whether this measurement is being grid-snapped */
-    #snap = true;
+    static get hasModuleConflict(): boolean {
+        return ["drag-ruler", "elevationruler", "pf2e-ruler"].some((id) => game.modules.get(id)?.active);
+    }
 
     /** The footprint of the drag-measured token relative to the origin center */
     #footprint: GridOffset[] = [];
+
+    /** Grid spaces highlighted for the current measurement */
+    #highlighted = new Set<number>();
 
     #exactDestination: Point | null = null;
 
@@ -46,7 +50,7 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
     }
 
     get dragMeasurement(): boolean {
-        return RulerPF2e.#dragMeasurement && this.#snap;
+        return RulerPF2e.#dragMeasurement && (game.activeTool === "ruler" || canvas.tokens.controlled.length <= 1);
     }
 
     get isMeasuring(): boolean {
@@ -66,26 +70,30 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
 
     startDragMeasurement(event: TokenPointerEvent<NonNullable<TToken>>): void {
         const token = event.interactionData.object;
-        this.#snap = !event.shiftKey;
         if (!this.dragMeasurement || !token || game.activeTool === "ruler") {
             return;
         }
         token.document.locked = true;
-        const originPoint = token.center;
-        const offset = canvas.grid.getOffset(originPoint);
-        this.#footprint = token.footprint.map((o) => ({ i: o.i - offset.i, j: o.j - offset.j }));
-
-        return this._startMeasurement(originPoint, { snap: this.#snap, token });
+        return this._startMeasurement(token.center, { snap: !event.shiftKey, token });
     }
 
     /**
      * @param [exactDestination] The coordinates of the dragged token preview, if any
      */
-    async finishDragMeasurement(exactDestination: Point | null = null): Promise<boolean | void> {
+    async finishDragMeasurement(
+        event: TokenPointerEvent<NonNullable<TToken>>,
+        exactDestination: Point | null = null,
+    ): Promise<boolean | void> {
         if (!this.dragMeasurement) return;
         if (this.token) {
             this.token.document.locked = this.token.document._source.locked;
             if (!this.isMeasuring) canvas.mouseInteractionManager.cancel();
+            // If snapping, adjust the token document's current position to prevent upstream from "correcting" it
+            if (!event.shiftKey) {
+                const { x, y } = this.token.getSnappedPosition();
+                this.token.document.x = x;
+                this.token.document.y = y;
+            }
             // Special consideration for tiny tokens: allow them to move within a square
             this.#exactDestination = exactDestination;
             if (exactDestination && this.token.document.width < 1) {
@@ -94,12 +102,22 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
                     lastSegment.ray = new Ray(R.pick(this.token, ["x", "y"]), exactDestination);
                 }
             }
-            return this.moveToken().then(() => {
-                this.#exactDestination = null;
-            });
+            return this.moveToken();
         }
 
         return this._endMeasurement();
+    }
+
+    /** Acquire the token's footprint for drag measurement. */
+    override measure(
+        destination: Point,
+        options?: { snap?: boolean; force?: boolean },
+    ): void | RulerMeasurementSegment[] {
+        if (this.dragMeasurement && this.token && this.origin) {
+            const offset = canvas.grid.getOffset(this.origin);
+            this.#footprint = this.token.footprint.map((o) => ({ i: o.i - offset.i, j: o.j - offset.j }));
+        }
+        return super.measure(destination, options);
     }
 
     /** Allow GMs to move tokens through walls when drag-measuring. */
@@ -159,16 +177,16 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
         };
     }
 
-    protected override _getMeasurementOrigin(point: Point, { snap = true } = {}): Point {
-        if (!this.dragMeasurement || !this.token || !snap) {
-            return super._getMeasurementOrigin(point, { snap });
+    protected override _getMeasurementOrigin(point: Point, options?: { snap?: boolean }): Point {
+        if (!this.dragMeasurement || !this.token || options?.snap === false) {
+            return super._getMeasurementOrigin(point, options);
         }
         return canvas.grid.getSnappedPoint(point, { mode: this.#snapMode });
     }
 
-    protected override _getMeasurementDestination(point: Point, { snap = true }: { snap?: boolean } = {}): Point {
-        if (!this.dragMeasurement || !this.token || !snap) {
-            return super._getMeasurementDestination(point, { snap });
+    protected override _getMeasurementDestination(point: Point, options?: { snap?: boolean }): Point {
+        if (!this.dragMeasurement || !this.token || options?.snap === false) {
+            return super._getMeasurementDestination(point, options);
         }
         return canvas.grid.getSnappedPoint(point, { mode: this.#snapMode });
     }
@@ -180,17 +198,38 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
             return super._highlightMeasurementSegment(segment);
         }
 
+        this.#highlighted.clear();
+        if (canvas.grid.isHexagonal) {
+            this.#highlightHexSegment(segment);
+        } else {
+            this.#highlightSegment(segment);
+        }
+    }
+
+    #highlightSegment(segment: RulerMeasurementSegment): void {
         // Keep track of grid spaces set to be highlighed in order to skip repeated highlighting
-        const seen = new Set<number>();
         for (const offset of canvas.grid.getDirectPath([segment.ray.A, segment.ray.B])) {
             for (const stomp of this.#footprint) {
                 const newOffset = { i: offset.i + stomp.i, j: offset.j + stomp.j };
                 const packed = (newOffset.i << 16) + newOffset.j;
-                if (!seen.has(packed)) {
-                    seen.add(packed);
+                if (!this.#highlighted.has(packed)) {
+                    this.#highlighted.add(packed);
                     const point = canvas.grid.getTopLeftPoint(newOffset);
                     canvas.interface.grid.highlightPosition(this.name, { ...point, color: this.color });
                 }
+            }
+        }
+    }
+
+    /** "Fat ruler" highlighting not yet supported for hexagonal grids */
+    #highlightHexSegment(segment: RulerMeasurementSegment): void {
+        // Keep track of grid spaces set to be highlighed in order to skip repeated highlighting
+        for (const offset of canvas.grid.getDirectPath([segment.ray.A, segment.ray.B])) {
+            const packed = (offset.i << 16) + offset.j;
+            if (!this.#highlighted.has(packed)) {
+                this.#highlighted.add(packed);
+                const point = canvas.grid.getTopLeftPoint(offset);
+                canvas.interface.grid.highlightPosition(this.name, { ...point, color: this.color });
             }
         }
     }
@@ -200,10 +239,10 @@ class RulerPF2e<TToken extends TokenPF2e | null = TokenPF2e | null> extends Rule
         segment: RulerMeasurementSegment,
         destination: Point,
     ): Promise<unknown> {
-        if (this.dragMeasurement && this.#exactDestination && token && token.w < canvas.grid.sizeX) {
+        if (this.dragMeasurement && this.#exactDestination && segment === this.segments.at(-1)) {
             const exactDestination = this.#exactDestination;
-            const adjustedDestination = exactDestination ? exactDestination : destination;
-            return super._animateSegment(token, segment, adjustedDestination);
+            this.#exactDestination = null;
+            return super._animateSegment(token, segment, exactDestination);
         }
         return super._animateSegment(token, segment, destination);
     }

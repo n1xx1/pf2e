@@ -4,19 +4,19 @@
     data-item-id="{{action.item.id}}"
     data-item-type="{{action.item.type}}"
 >
-    <div class="item-image strike framed">
+    <div class="item-image framed">
         <img src="{{action.img}}" /> <i class="fa-solid fa-message"></i>
     </div>
-    <section>
+    <section class="button-groups">
         {{#unless omitName}}
-            <div class="item-name" data-tooltip-direction="UP">
-                <h4 class="name"><a data-action="toggle-summary">{{localize action.label}}</a></h4>
+            <h4 class="name" data-tooltip-direction="UP">
+                <a data-action="toggle-summary">{{localize action.label}}</a>
                 <div class="item-controls">
                     {{#if (and @root.editable (eq @index 0))}}
                         <a data-action="edit-item" data-tooltip="PF2E.EditItemTitle"><i class="fa-solid fa-fw fa-edit"></i></a>
                     {{/if}}
                 </div>
-            </div>
+            </h4>
         {{/unless}}
 
         {{#> attackDamage action=action melee=true}}{{/attackDamage}}

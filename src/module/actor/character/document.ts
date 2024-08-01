@@ -54,6 +54,7 @@ import {
     extractRollSubstitutions,
     extractRollTwice,
 } from "@module/rules/helpers.ts";
+import type { ItemAlterationRuleElement } from "@module/rules/rule-element/item-alteration/rule-element.ts";
 import type { UserPF2e } from "@module/user/document.ts";
 import { TokenDocumentPF2e } from "@scene/index.ts";
 import { eventToRollParams } from "@scripts/sheet-util.ts";
@@ -1102,7 +1103,14 @@ class CharacterPF2e<TParent extends TokenDocumentPF2e | null = TokenDocumentPF2e
                   };
 
                   // No handwraps, so generate straight from source
-                  return new WeaponPF2e(source, { parent: this });
+                  const attack = new WeaponPF2e(source, { parent: this });
+                  const alterations = this.rules.filter(
+                      (r): r is ItemAlterationRuleElement => r.key === "ItemAlteration",
+                  );
+                  for (const rule of alterations) {
+                      rule.applyAlteration({ singleItem: attack });
+                  }
+                  return attack;
               })()
             : null;
 
@@ -1418,12 +1426,14 @@ class CharacterPF2e<TParent extends TokenDocumentPF2e | null = TokenDocumentPF2e
                       glyph: DAMAGE_TYPE_ICONS[o],
                   }));
 
+        const hiddenCauseStowed = weapon.isStowed && this.flags.pf2e.hideStowed;
+        const hiddenCauseUnarmed = weapon.slug === "basic-unarmed" && !this.flags.pf2e.showBasicUnarmed;
         const action: CharacterStrike = fu.mergeObject(strikeStat, {
             label: weapon.name,
             quantity: weapon.quantity,
             ready,
             domains: attackDomains,
-            visible: weapon.slug !== "basic-unarmed" || this.flags.pf2e.showBasicUnarmed,
+            visible: !(hiddenCauseStowed || hiddenCauseUnarmed),
             glyph: "A",
             item: weapon,
             type: "strike" as const,

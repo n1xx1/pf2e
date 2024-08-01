@@ -744,7 +744,7 @@
                     "sourceId": "Compendium.pf2e.spells-srd.Item.HTou8cG05yuSkesj"
                 }
             },
-            "img": "systems/pf2e/icons/spells/status.webp",
+            "img": "icons/magic/perception/orb-eye-scrying.webp",
             "name": "Status",
             "sort": 1100000,
             "system": {
@@ -2140,7 +2140,7 @@
             "_id": "goZUr5OKDkHs7FKd",
             "img": "systems/pf2e/icons/default-icons/lore.svg",
             "name": "Fortune-Telling Lore",
-            "sort": 3800000,
+            "sort": 3500000,
             "system": {
                 "description": {
                     "value": ""
@@ -2166,7 +2166,7 @@
             "_id": "b8h9d7wiOHuqMKkG",
             "img": "systems/pf2e/icons/default-icons/lore.svg",
             "name": "Lore (any one subcategory)",
-            "sort": 3900000,
+            "sort": 3600000,
             "system": {
                 "description": {
                     "value": ""

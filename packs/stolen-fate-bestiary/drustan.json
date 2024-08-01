@@ -119,7 +119,7 @@
                 "damage": {},
                 "defense": null,
                 "description": {
-                    "value": "<p>You infuse the target with void energy. If the target is living, this deals 1d6 void damage (basic Fortitude save); on a failed save, the target also takes a –2 status penalty to AC for 1 round.</p>\n<p>@UUID[Compendium.pf2e.spell-effects.Item.Spell Effect: Touch of Corruption]</p>\n<p>If the target is a willing undead creature, the target instead regains 6 Hit Points, and if you are the undead target, you also gain a +2 status bonus to damage rolls for 1 round.</p>\n<p>@UUID[Compendium.pf2e.spell-effects.Item.Spell Effect: Touch of Corruption (Healing)]</p>\n<hr />\n<p><strong>Heightened (+1)</strong> Increase the damage dealt to a living creature by 1d6 or increase the Hit Points regained by undead by 6.</p>"
+                    "value": "<p>You infuse the target with void energy. If the target is living, this deals 1d6 void damage (basic Fortitude save); on a failed save, the target also takes a –2 status penalty to AC for 1 round.</p>\n<p>@UUID[Compendium.pf2e.spell-effects.Item.Spell Effect: Touch of the Void]{Spell Effect: Touch of Corruption}</p>\n<p>If the target is a willing undead creature, the target instead regains 6 Hit Points, and if you are the undead target, you also gain a +2 status bonus to damage rolls for 1 round.</p>\n<p>@UUID[Compendium.pf2e.spell-effects.Item.Spell Effect: Touch of the Void (Healing)]{Spell Effect: Touch of Corruption (Healing)}</p>\n<hr />\n<p><strong>Heightened (+1)</strong> Increase the damage dealt to a living creature by 1d6 or increase the Hit Points regained by undead by 6.</p>"
                 },
                 "duration": {
                     "sustained": false,
@@ -495,7 +495,7 @@
                 "checkPenalty": -3,
                 "containerId": null,
                 "description": {
-                    "value": "<p>Plate mail consists of interlocking plates that encase nearly the entire body in a carapace of steel. It is costly and heavy, and the wearer often requires help to don it correctly, but it provides some of the best defense armor can supply. A suit of this armor comes with an undercoat of @UUID[Compendium.pf2e.equipment-srd.Item.Padded Armor]{padded armor} and a pair of @UUID[Compendium.pf2e.equipment-srd.Item.Gauntlet]{gauntlets}.</p>"
+                    "value": "<p>Plate mail consists of interlocking plates that encase nearly the entire body in a carapace of steel. It is costly and heavy, and the wearer often requires help to don it correctly, but it provides some of the best defense armor can supply. A suit of this armor comes with an undercoat of @UUID[Compendium.pf2e.equipment-srd.Item.Padded Armor] and a pair of @UUID[Compendium.pf2e.equipment-srd.Item.Gauntlet]{gauntlets}.</p>"
                 },
                 "dexCap": 0,
                 "equipped": {

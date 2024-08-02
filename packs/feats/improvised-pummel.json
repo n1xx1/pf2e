@@ -28,7 +28,84 @@
             "remaster": true,
             "title": "Pathfinder Player Core 2"
         },
-        "rules": [],
+        "rules": [
+            {
+                "key": "WeaponPotency",
+                "selector": "attack",
+                "predicate": ["item:tag:improvised"],
+                "value": "ternary(gte(@actor.level,12),2,1)",
+                "priority": 100
+            },
+            {
+                "key": "WeaponPotency",
+                "selector": "attack",
+                "predicate": ["item:tag:improvised", "handwraps-of-mighty-blows"],
+                "value": "max(@actor.flags.pf2e.handwrapsOfMightyBlows.potency,ternary(gte(@actor.level,12),2,1))",
+                "priority": 120
+            },
+            {
+                "key": "DamageDice",
+                "override": {
+                    "diceNumber": "max(1+@actor.flags.pf2e.handwrapsOfMightyBlows.striking,ternary(gte(@actor.level,16),3,2))"
+                },
+                "selector": "strike-damage",
+                "predicate": ["item:tag:improvised", "handwraps-of-mighty-blows"],
+                "priority": 120
+            },
+            {
+                "key": "DamageDice",
+                "override": {
+                    "diceNumber": "max(ternary(gte(@actor.level,16),3,2))"
+                },
+                "selector": "strike-damage",
+                "predicate": ["item:tag:improvised"],
+                "priority": 100
+            },
+            {
+                "key": "AdjustStrike",
+                "mode": "add",
+                "property": "property-runes",
+                "value": "{actor|flags.pf2e.handwrapsOfMightyBlows.property0.value}",
+                "definition": ["item:tag:improvised"],
+                "predicate": [
+                    "handwraps-of-mighty-blows",
+                    "handwraps-rune-property-{actor|flags.pf2e.handwrapsOfMightyBlows.property0.value}"
+                ]
+            },
+            {
+                "key": "AdjustStrike",
+                "mode": "add",
+                "property": "property-runes",
+                "value": "{actor|flags.pf2e.handwrapsOfMightyBlows.property1.value}",
+                "definition": ["item:tag:improvised"],
+                "predicate": [
+                    "handwraps-of-mighty-blows",
+                    "handwraps-rune-property-{actor|flags.pf2e.handwrapsOfMightyBlows.property1.value}"
+                ]
+            },
+            {
+                "key": "AdjustStrike",
+                "mode": "add",
+                "property": "property-runes",
+                "value": "{actor|flags.pf2e.handwrapsOfMightyBlows.property2.value}",
+                "definition": ["item:tag:improvised"],
+                "predicate": [
+                    "handwraps-of-mighty-blows",
+                    "handwraps-rune-property-{actor|flags.pf2e.handwrapsOfMightyBlows.property2.value}"
+                ]
+            },
+            {
+                "key": "AdjustStrike",
+                "mode": "add",
+                "property": "property-runes",
+                "value": "{actor|flags.pf2e.handwrapsOfMightyBlows.property3.value}",
+                "definition": ["item:tag:improvised"],
+                "predicate": [
+                    "handwraps-of-mighty-blows",
+                    "handwraps-rune-property-{actor|flags.pf2e.handwrapsOfMightyBlows.property3.value}"
+                ]
+            }
+        ],
         "traits": {
             "rarity": "common",
             "value": [

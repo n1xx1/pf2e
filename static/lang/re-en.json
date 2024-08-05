@@ -2054,6 +2054,9 @@
                 "Ligneous": {
                     "ToggleLabel": "Wooden Rage"
                 },
+                "MightyRage": {
+                    "ToggleLabel": "First Strike you make during your first turn after using Quick-Tempered"
+                },
                 "Spirit": {
                     "NegativeDamage": "Void Damage",
                     "PositiveDamage": "Vitality Damage",

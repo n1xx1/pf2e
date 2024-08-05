@@ -24,7 +24,26 @@
             "remaster": true,
             "title": "Pathfinder Player Core 2"
         },
-        "rules": [],
+        "rules": [
+            {
+                "disabledIf": [{"not": "self:effect:rage"}],
+                "disabledValue": false,
+                "domain": "all",
+                "key": "RollOption",
+                "option": "mighty-rage",
+                "toggleable": true,
+                "label": "PF2E.SpecificRule.Barbarian.MightyRage.ToggleLabel"
+            },
+            {
+                "key": "AdjustModifier",
+                "mode": "multiply",
+                "slug": "rage",
+                "predicate": ["mighty-rage"],
+                "selector": "strike-damage",
+                "value": 2,
+                "priority": 49
+            }
+        ],
         "subfeatures": {
             "proficiencies": {
                 "barbarian": {
